@@ -23,4 +23,21 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            script{
+                 withCredentials([string(credentialsId: 'TOKEN_TELEGRAM', variable: 'TOKEN'), string(credentialsId: 'Chat-ID-Telegram', variable: 'CHAT_ID')]) {
+                    sh ' curl -s -X POST https://api.telegram.org/bot"$TOKEN"/sendMessage -d chat_id="$CHAT_ID" -d text="$TEXT_SUCCESS_BUILD" '
+                 }
+            }
+        }
+        failure {
+            script{
+                withCredentials([string(credentialsId: 'TOKEN_TELEGRAM', variable: 'TOKEN'), string(credentialsId: 'Chat-ID-Telegram', variable: 'CHAT_ID')]) {
+                    sh ' curl -s -X POST https://api.telegram.org/bot"$TOKEN"/sendMessage -d chat_id="$CHAT_ID" -d text="$TEXT_FAILURE_BUILD" '
+                }
+            }
+        }
+    }
 }
